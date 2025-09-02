@@ -1,11 +1,10 @@
-import React from 'react'
-import './App.css';
+import { RouterProvider } from 'react-router-dom'
+import './App.css'
+import appRouter from './routes/appRouter'
 
 const App = () => {
   return (
-    <div>
-      <h1 className='text-9xl font-bold text-red-600'>Netflix Gpt</h1>
-    </div>
+    <RouterProvider router={appRouter} />
   )
 }
 
