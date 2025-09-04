@@ -2,10 +2,14 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import useAuthListener from "@/utils/customeHook/useAuthListener";
 
 const Header = () => {
   const navigate = useNavigate();
   const userInfo=useSelector((state)=>state.user);
+
+   // custome hook
+   useAuthListener();
 
   const handleSignOut = () => {
     signOut(auth)

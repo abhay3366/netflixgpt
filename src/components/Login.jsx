@@ -10,8 +10,8 @@ import {
 import { auth } from "@/firebaseConfig";
 import { useDispatch} from "react-redux";
 import { addUser} from "@/utils/userSlice";
-import { Navigate, useNavigate } from "react-router-dom";
-import useAuthListener from "@/utils/customeHook/useAuthListener";
+import {  useNavigate } from "react-router-dom";
+
 
 const Login = () => {
   const [signup, setSignup] = useState(false);
@@ -24,8 +24,7 @@ const Login = () => {
 
   //  onAuthStateChanged every time call when login logout
  
-    // custome hook
-   useAuthListener();
+   
 
   const handleButtonClick = (e) => {
     e.preventDefault();
@@ -55,7 +54,7 @@ const Login = () => {
             dispatch(addUser({ uid: uid, email: email, displayName: displayName,photoURL:photoURL }));
               
               alert("Signup successful! Welcome " + updatedUser.displayName);
-              navigate("/about");
+             
             })
             .catch((error) => {
               console.error("Profile update error:", error.message);
@@ -79,7 +78,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           alert("Login successfully! Welcome " + user.displayName);
-           navigate("/about");
+          
         })
         .catch((error) => {
           console.log(error.code, error.message);
