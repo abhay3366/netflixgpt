@@ -15,58 +15,60 @@ const Login = () => {
   const email = useRef(null);
   const password = useRef(null);
   const name = useRef(null);
-  console.log("name",name);
-
+  console.log("name", name);
 
   const handleButtonClick = (e) => {
     e.preventDefault();
     const message = checkValidateData(email.current.value);
-    console.log(name.current.value);
+
     setErrMessage(message);
+    // if (message) return;
+    // signup logik
 
-    // signup
+    if (signup) {
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
 
-if (signup) {
-  createUserWithEmailAndPassword(
-    auth,
-    email.current.value,
-    password.current.value
-  )
-    .then((userCredential) => {
-      const user = userCredential.user;
-
-      // ✅ Wait for updateProfile to finish
-      updateProfile(user, {
-        displayName: name.current.value,
-      })
-        .then(() => {
-          // now the displayName is updated
-          console.log("user", user.displayName, user.email);
-          alert("Signup successful! Welcome " + user.displayName);
+          // ✅ Wait for updateProfile to finish
+          updateProfile(user, {
+            displayName: name.current.value,
+          })
+            .then(() => {
+              // now the displayName is updated
+              console.log("user", user.displayName, user.email);
+              alert("Signup successful! Welcome " + user.displayName);
+            })
+            .catch((error) => {
+              console.error("Profile update error:", error.message);
+            });
         })
         .catch((error) => {
-          console.error("Profile update error:", error.message);
+          if (error.code == "auth/email-already-in-use") {
+            alert("This email is already registered. Please login instead.");
+          } else {
+            console.error("Profile update error:", error.message);
+          }
         });
-    })
-    .catch((error) => {
-      console.log(error.code, error.message);
-    });
-} else {
-  // signin
-  signInWithEmailAndPassword(
-    auth,
-    email.current.value,
-    password.current.value
-  )
-    .then((userCredential) => {
-      const user = userCredential.user;
-      alert("Login successfully! Welcome " + user.displayName);
-    })
-    .catch((error) => {
-      console.log(error.code, error.message);
-    });
-}
-
+    } else {
+      // signin
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+          alert("Login successfully! Welcome " + user.displayName);
+        })
+        .catch((error) => {
+          console.log(error.code, error.message);
+        });
+    }
   };
 
   return (
@@ -124,7 +126,6 @@ if (signup) {
                 style={{ color: "white", cursor: "pointer" }}
                 onClick={() => setSignup(false)}
               >
-                {" "}
                 Sign In
               </span>
             </>
