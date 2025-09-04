@@ -8,6 +8,10 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
+import { useDispatch} from "react-redux";
+import { addUser} from "@/utils/userSlice";
+import { Navigate, useNavigate } from "react-router-dom";
+import useAuthListener from "@/utils/customeHook/useAuthListener";
 
 const Login = () => {
   const [signup, setSignup] = useState(false);
@@ -15,14 +19,20 @@ const Login = () => {
   const email = useRef(null);
   const password = useRef(null);
   const name = useRef(null);
-  console.log("name", name);
+  const navigate = useNavigate();
+  const dispatch=useDispatch();
+
+  //  onAuthStateChanged every time call when login logout
+ 
+    // custome hook
+   useAuthListener();
 
   const handleButtonClick = (e) => {
     e.preventDefault();
     const message = checkValidateData(email.current.value);
 
     setErrMessage(message);
-    // if (message) return;
+    if (message) return;
     // signup logik
 
     if (signup) {
@@ -37,14 +47,19 @@ const Login = () => {
           // ✅ Wait for updateProfile to finish
           updateProfile(user, {
             displayName: name.current.value,
+            photoURL:"https://avatars.githubusercontent.com/u/68136960?v=4&size=64"
           })
             .then(() => {
-              // now the displayName is updated
-              console.log("user", user.displayName, user.email);
-              alert("Signup successful! Welcome " + user.displayName);
+              const updatedUser = auth.currentUser;
+             const { uid, email, displayName,photoURL } = updatedUser;
+            dispatch(addUser({ uid: uid, email: email, displayName: displayName,photoURL:photoURL }));
+              
+              alert("Signup successful! Welcome " + updatedUser.displayName);
+              navigate("/about");
             })
             .catch((error) => {
               console.error("Profile update error:", error.message);
+              navigate("/");
             });
         })
         .catch((error) => {
@@ -64,6 +79,7 @@ const Login = () => {
         .then((userCredential) => {
           const user = userCredential.user;
           alert("Login successfully! Welcome " + user.displayName);
+           navigate("/about");
         })
         .catch((error) => {
           console.log(error.code, error.message);
